@@ -1,0 +1,135 @@
+.portal-overlay-screen {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7f1d1d, #c9182b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.landing-card {
+  background: var(--white);
+  max-width: 780px;
+  width: 100%;
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.landing-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.landing-card h1 {
+  color: var(--primary);
+  font-size: 2.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.landing-subtitle {
+  color: var(--gray-600);
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+}
+
+.role-box {
+  background: var(--gray-100);
+  border: 2px solid var(--gray-300);
+  padding: 2rem 1.5rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.role-box:hover {
+  border-color: var(--primary);
+  background: #ffffff;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.role-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.role-box h3 {
+  color: var(--secondary);
+  margin-bottom: 0.4rem;
+}
+
+.role-box p {
+  color: var(--gray-600);
+  font-size: 0.85rem;
+}
+
+#authScreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7f1d1d, #c9182b);
+  padding: 1.5rem 1rem;
+}
+
+.auth-card {
+  background: var(--white);
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  position: relative;
+}
+
+.btn-back {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: none;
+  border: none;
+  color: var(--gray-600);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-back:hover {
+  color: var(--primary);
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gray-100);
+  margin-bottom: 1.5rem;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: none;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--gray-600);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.auth-tab-btn.active {
+  color: var(--primary);
+  border-bottom: 3px solid var(--primary);
+}

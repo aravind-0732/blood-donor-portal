@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "name": "Amit Sharma",
+    "bloodGroup": "O+",
+    "city": "Chennai",
+    "phone": "9876543210",
+    "lastDonationDate": "2026-05-15",
+    "available": true
+  },
+  {
+    "id": "2",
+    "name": "Rajesh Kumar",
+    "bloodGroup": "A+",
+    "city": "Salem",
+    "phone": "9443218765",
+    "lastDonationDate": "2026-07-20",
+    "available": true
+  },
+  {
+    "id": "3",
+    "name": "Priyanka Patel",
+    "bloodGroup": "B+",
+    "city": "Coimbatore",
+    "phone": "8123456789",
+    "lastDonationDate": "2026-08-01",
+    "available": false
+  },
+  {
+    "id": "4",
+    "name": "Suresh Raina",
+    "bloodGroup": "AB+",
+    "city": "Madurai",
+    "phone": "9080706050",
+    "lastDonationDate": "2026-03-10",
+    "available": true
+  },
+  {
+    "id": "5",
+    "name": "Ananya Sen",
+    "bloodGroup": "O-",
+    "city": "Chennai",
+    "phone": "7012345678",
+    "lastDonationDate": "2026-06-25",
+    "available": true
+  },
+  {
+    "id": "6",
+    "name": "Vijay Shankar",
+    "bloodGroup": "A-",
+    "city": "Salem",
+    "phone": "9988776655",
+    "lastDonationDate": "2026-04-12",
+    "available": true
+  }
+]

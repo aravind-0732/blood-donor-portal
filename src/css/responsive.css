@@ -1,0 +1,46 @@
+@media (max-width: 768px) {
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .nav-controls {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .search-card {
+    grid-template-columns: 1fr;
+    margin: -1.5rem 1rem 1.5rem;
+    padding: 1.2rem;
+  }
+
+  .hero {
+    padding: 2.5rem 1rem 3.5rem;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .donor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .floating-emergency-sos {
+    bottom: 15px;
+    right: 15px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+}

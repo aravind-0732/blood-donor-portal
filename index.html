@@ -1,695 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pulseline — Blood Donor Network</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --crimson:#A9203E;
-    --crimson-deep:#7A1730;
-    --crimson-bright:#D5304F;
-    --charcoal:#1C1917;
-    --charcoal-soft:#2B2624;
-    --cream:#FBF6F0;
-    --rose:#F5DEDB;
-    --gold:#D9A441;
-    --gold-deep:#B3822C;
-    --ink-70:rgba(28,25,23,0.7);
-    --ink-50:rgba(28,25,23,0.5);
-    --line:rgba(28,25,23,0.12);
-    --radius:14px;
-    --shadow:0 10px 30px rgba(28,25,23,0.08);
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    font-family:'Inter',sans-serif;
-    background:var(--cream);
-    color:var(--charcoal);
-    -webkit-font-smoothing:antialiased;
-    padding-bottom:60px;
-  }
-  .display{font-family:'Archivo Expanded',sans-serif;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
-
-  /* ---------- HERO ---------- */
-  .hero{
-    background:linear-gradient(180deg,var(--charcoal) 0%, #241F1D 100%);
-    color:var(--cream);
-    padding:36px 24px 28px;
-    position:relative;
-    overflow:hidden;
-  }
-  .hero-top{
-    display:flex; justify-content:space-between; align-items:center;
-    max-width:1000px; margin:0 auto 22px;
-  }
-  .brand{display:flex; align-items:center; gap:10px;}
-  .brand-mark{width:14px;height:14px;border-radius:50% 50% 50% 0;background:var(--crimson-bright);transform:rotate(45deg);box-shadow:0 0 0 3px rgba(213,48,79,0.18);}
-  .brand-name{font-family:'Archivo Expanded',sans-serif; font-weight:700; letter-spacing:0.02em; font-size:19px;}
-  .hero-stats{display:flex; gap:22px;}
-  .hero-stat{text-align:right;}
-  .hero-stat .n{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:18px; color:var(--gold);}
-  .hero-stat .l{font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:rgba(251,246,240,0.55);}
-
-  .hero-main{max-width:1000px; margin:0 auto; position:relative;}
-  .hero-main h1{
-    font-family:'Archivo Expanded',sans-serif;
-    font-weight:800;
-    font-size:clamp(30px,5vw,52px);
-    line-height:1.06;
-    letter-spacing:-0.01em;
-    max-width:640px;
-  }
-  .hero-main h1 em{font-style:normal; color:var(--crimson-bright);}
-  .hero-sub{margin-top:14px; max-width:480px; color:rgba(251,246,240,0.72); font-size:15px; line-height:1.5;}
-
-  .pulse-wrap{margin-top:26px; height:64px; position:relative;}
-  .pulse-wrap svg{width:100%; height:100%; display:block;}
-  .pulse-line{fill:none; stroke:var(--crimson-bright); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
-    stroke-dasharray:400; stroke-dashoffset:400; animation:draw 2.6s linear infinite;}
-  @keyframes draw{ to { stroke-dashoffset:-400; } }
-  .pulse-wrap.urgent .pulse-line{animation-duration:1.1s; stroke:var(--gold);}
-  .pulse-caption{position:absolute; right:0; top:-18px; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:rgba(251,246,240,0.45);}
-
-  /* ---------- NAV ---------- */
-  .tabbar{
-    max-width:1000px; margin:-22px auto 0; position:relative; z-index:5;
-    background:var(--cream); border-radius:16px; box-shadow:var(--shadow);
-    display:flex; padding:6px; gap:4px; overflow-x:auto;
-  }
-  .tabbtn{
-    flex:1; min-width:130px; border:none; background:transparent; cursor:pointer;
-    padding:12px 14px; border-radius:11px; font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px;
-    color:var(--ink-70); transition:all .18s ease; white-space:nowrap;
-  }
-  .tabbtn:hover{background:rgba(169,32,62,0.06);}
-  .tabbtn.active{background:var(--charcoal); color:var(--cream);}
-
-  main{max-width:1000px; margin:34px auto 0; padding:0 24px;}
-  .panel{display:none;}
-  .panel.active{display:block; animation:fade .3s ease;}
-  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
-
-  .section-head{margin-bottom:20px;}
-  .eyebrow{font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--crimson); font-weight:700; margin-bottom:6px;}
-  .section-head h2{font-family:'Archivo Expanded',sans-serif; font-size:26px; font-weight:700;}
-  .section-head p{color:var(--ink-70); font-size:14px; margin-top:6px; max-width:520px;}
-
-  /* ---------- CARD / FORM shells ---------- */
-  .card{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px;}
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  @media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
-
-  label{display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-70); margin-bottom:6px;}
-  input[type=text], input[type=tel], input[type=date], input[type=number], select, textarea{
-    width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:9px;
-    font-family:'Inter',sans-serif; font-size:14px; background:var(--cream); color:var(--charcoal);
-    transition:border-color .15s ease;
-  }
-  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--crimson);}
-  .field{margin-bottom:16px;}
-  textarea{resize:vertical; min-height:70px;}
-
-  /* blood group picker */
-  .bg-picker{display:flex; flex-wrap:wrap; gap:8px;}
-  .bg-chip{
-    padding:9px 15px; border-radius:20px; border:1.5px solid var(--line); background:#fff;
-    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13.5px; cursor:pointer;
-    color:var(--charcoal); transition:all .15s ease;
-  }
-  .bg-chip:hover{border-color:var(--crimson);}
-  .bg-chip.selected{background:var(--crimson); border-color:var(--crimson); color:#fff;}
-
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    padding:12px 22px; border-radius:9px; border:none; cursor:pointer;
-    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; transition:transform .12s ease, background .15s ease;
-  }
-  .btn:active{transform:scale(0.98);}
-  .btn-primary{background:var(--crimson); color:#fff;}
-  .btn-primary:hover{background:var(--crimson-deep);}
-  .btn-ghost{background:transparent; border:1.5px solid var(--line); color:var(--charcoal);}
-  .btn-ghost:hover{border-color:var(--crimson); color:var(--crimson);}
-  .btn-gold{background:var(--gold); color:var(--charcoal);}
-  .btn-gold:hover{background:var(--gold-deep);}
-  .btn-block{width:100%;}
-  .btn-sm{padding:8px 14px; font-size:12.5px;}
-
-  .toggle-row{display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--cream); border-radius:9px; border:1.5px solid var(--line);}
-  .switch{position:relative; width:42px; height:24px; flex-shrink:0;}
-  .switch input{opacity:0; width:0; height:0;}
-  .slider{position:absolute; inset:0; background:#D9D2CC; border-radius:20px; cursor:pointer; transition:.2s;}
-  .slider:before{content:""; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s;}
-  .switch input:checked + .slider{background:var(--gold);}
-  .switch input:checked + .slider:before{transform:translateX(18px);}
-
-  .msg{padding:11px 14px; border-radius:9px; font-size:13px; font-weight:500; margin-top:14px; display:none;}
-  .msg.show{display:block;}
-  .msg.ok{background:#E7F1E5; color:#3B6B3E;}
-  .msg.err{background:#FBE4E4; color:var(--crimson-deep);}
-
-  /* ---------- FILTER BAR (search) ---------- */
-  .filterbar{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; align-items:flex-end;}
-  .filterbar .field{margin-bottom:0; min-width:150px;}
-  .filterbar .field.grow{flex:1;}
-
-  /* ---------- donor / request cards ---------- */
-  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
-  .dcard{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow);}
-  .dcard-top{display:flex; align-items:center; gap:12px;}
-  .drop{
-    width:44px; height:44px; border-radius:50% 50% 50% 0; transform:rotate(45deg);
-    background:linear-gradient(135deg,var(--crimson-bright),var(--crimson-deep));
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  }
-  .drop span{transform:rotate(-45deg); font-family:'IBM Plex Mono',monospace; font-weight:700; color:#fff; font-size:11.5px;}
-  .dcard-name{font-weight:700; font-size:15px;}
-  .dcard-city{font-size:12.5px; color:var(--ink-50);}
-  .dcard-meta{display:flex; flex-wrap:wrap; gap:6px; font-size:11.5px;}
-  .pill{padding:4px 9px; border-radius:20px; background:var(--cream); color:var(--ink-70); font-weight:600;}
-  .pill.avail{background:#E7F1E5; color:#3B6B3E;}
-  .pill.resting{background:#F4EAD8; color:var(--gold-deep);}
-  .dcard-actions{display:flex; gap:8px; margin-top:auto;}
-
-  .empty{text-align:center; padding:50px 20px; color:var(--ink-50);}
-  .empty .drop{margin:0 auto 14px; width:52px; height:52px;}
-  .empty .drop span{font-size:13px;}
-
-  /* request board */
-  .req-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px; margin-bottom:12px; box-shadow:var(--shadow);}
-  .req-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
-  .req-urgency{padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em;}
-  .urg-critical{background:var(--crimson); color:#fff;}
-  .urg-urgent{background:var(--gold); color:var(--charcoal);}
-  .urg-planned{background:var(--rose); color:var(--crimson-deep);}
-  .req-title{font-weight:700; font-size:15.5px; margin-top:6px;}
-  .req-meta{font-size:12.5px; color:var(--ink-50); margin-top:3px;}
-  .req-msg{font-size:13.5px; color:var(--ink-70); margin-top:10px; line-height:1.5;}
-  .req-footer{display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid var(--line);}
-  .match-count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--crimson); font-weight:600;}
-
-  /* dashboard */
-  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:26px;}
-  .stat-box{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
-  .stat-box .n{font-family:'IBM Plex Mono',monospace; font-size:28px; font-weight:600; color:var(--crimson);}
-  .stat-box .l{font-size:12px; color:var(--ink-50); margin-top:4px;}
-  .bar-row{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
-  .bar-label{width:44px; font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; flex-shrink:0;}
-  .bar-track{flex:1; height:14px; background:var(--cream); border-radius:8px; overflow:hidden;}
-  .bar-fill{height:100%; background:linear-gradient(90deg,var(--crimson-bright),var(--crimson)); border-radius:8px; transition:width .5s ease;}
-  .bar-n{width:28px; text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-50);}
-
-  .compat-note{background:var(--rose); border-radius:9px; padding:12px 14px; font-size:12.5px; color:var(--crimson-deep); margin-top:14px; line-height:1.5;}
-  .loading{text-align:center; padding:40px; color:var(--ink-50); font-size:13px;}
-
-  ::selection{background:var(--crimson); color:#fff;}
-  @media(prefers-reduced-motion: reduce){ .pulse-line{animation:none; stroke-dashoffset:0;} }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Drop | Emergency Blood Portal</title>
+  <link rel="stylesheet" href="src/css/styles.css">
+  <link rel="stylesheet" href="src/css/auth.css">
+  <link rel="stylesheet" href="src/css/responsive.css">
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-top">
-    <div class="brand">
-      <div class="brand-mark"></div>
-      <div class="brand-name">PULSELINE</div>
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="n" id="statDonors">–</div><div class="l">Donors</div></div>
-      <div class="hero-stat"><div class="n" id="statRequests">–</div><div class="l">Active Requests</div></div>
+  <!-- ================= 1. ROLE SELECTION LANDING SCREEN ================= -->
+  <div id="landingScreen" class="portal-overlay-screen">
+    <div class="landing-card">
+      <div class="landing-icon">🩸</div>
+      <h1>Life Drop Blood Network</h1>
+      <p class="landing-subtitle">Connecting voluntary blood donors directly with emergency patients across Tamil Nadu</p>
+      
+      <div class="role-grid">
+        <div class="role-box" onclick="selectRole('donor')">
+          <div class="role-icon">🙋‍♂️</div>
+          <h3>I Want to Donate</h3>
+          <p>Register as a lifesaver, log donation dates & manage availability</p>
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Continue as Donor</button>
+        </div>
+
+        <div class="role-box" onclick="selectRole('patient')">
+          <div class="role-icon">🏥</div>
+          <h3>I Need Blood</h3>
+          <p>Instantly find matching donors in your district & broadcast urgent SOS</p>
+          <button class="btn btn-outline" style="width: 100%; margin-top: 1rem;">Continue as Patient / Attender</button>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="hero-main">
-    <h1>Every drop has a <em>deadline.</em><br>Find your match, fast.</h1>
-    <p class="hero-sub">Register as a donor, search by blood group and city, and post a request when someone needs blood urgently. No login, no waiting room.</p>
-    <div class="pulse-wrap" id="pulseWrap">
-      <span class="pulse-caption" id="pulseCaption">network idle</span>
-      <svg viewBox="0 0 800 64" preserveAspectRatio="none">
-        <path class="pulse-line" d="M0,32 L120,32 L145,32 L160,8 L180,58 L200,14 L215,32 L260,32 L800,32 M800,32 L920,32 L945,32 L960,8 L980,58 L1000,14 L1015,32 L1060,32 L1600,32" />
-      </svg>
+
+  <!-- ================= 2. AUTHENTICATION SCREEN ================= -->
+  <div id="authScreen" style="display: none;">
+    <div class="auth-card">
+      <button class="btn-back" onclick="returnToLanding()">← Back to Role Selection</button>
+      <h2 style="color: var(--primary); margin-top: 0.5rem; margin-bottom: 0.2rem;">🩸 Life Drop</h2>
+      <p id="authRoleLabel" style="color: var(--gray-600); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.2rem;">Donor Portal Access</p>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabSignInBtn" onclick="switchAuthTab('signin')">Sign In</button>
+        <button class="auth-tab-btn" id="tabSignUpBtn" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" onsubmit="handleSignIn(event)">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="user@gmail.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign In</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signUpForm" onsubmit="handleSignUp(event)" style="display: none;">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="regName" class="form-control" placeholder="Enter full name" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="user@gmail.com" required>
+        </div>
+        <div class="form-group" id="regBloodGroupGroup">
+          <label>Blood Group</label>
+          <select id="regBlood" class="form-control" required>
+            <option value="A+">A+</option><option value="A-">A-</option>
+            <option value="B+">B+</option><option value="B-">B-</option>
+            <option value="O+">O+</option><option value="O-">O-</option>
+            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>District / City</label>
+          <input type="text" id="regCity" class="form-control" placeholder="e.g. Salem, Erode, Chennai" required>
+        </div>
+        <div class="form-group">
+          <label>Mobile Number</label>
+          <input type="tel" id="regPhone" class="form-control" pattern="[0-9]{10}" placeholder="10-digit number" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPass" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Create Account</button>
+      </form>
     </div>
   </div>
-</div>
 
-<div class="tabbar">
-  <button class="tabbtn active" data-tab="find">Find a Donor</button>
-  <button class="tabbtn" data-tab="register">Become a Donor</button>
-  <button class="tabbtn" data-tab="request">Request Blood</button>
-  <button class="tabbtn" data-tab="board">Request Board</button>
-  <button class="tabbtn" data-tab="dashboard">Dashboard</button>
-</div>
-
-<main>
-
-  <!-- FIND DONOR -->
-  <section class="panel active" id="panel-find">
-    <div class="section-head">
-      <div class="eyebrow">Search</div>
-      <h2>Find a matching donor</h2>
-      <p>Filter by blood group, city, and availability. Compatible groups are included automatically when you search by need.</p>
-    </div>
-    <div class="filterbar">
-      <div class="field">
-        <label>Blood group</label>
-        <select id="fGroup">
-          <option value="">Any</option>
-          <option>O-</option><option>O+</option><option>A-</option><option>A+</option>
-          <option>B-</option><option>B+</option><option>AB-</option><option>AB+</option>
-        </select>
+  <!-- ================= 3. MAIN APP SCREEN ================= -->
+  <div id="appScreen" style="display: none;">
+    <!-- Navigation Bar -->
+    <header class="navbar">
+      <div class="brand">🩸 Life Drop</div>
+      <div class="nav-controls">
+        <div id="userProfileBadge" class="user-badge">
+          👤 <span id="userDisplayName">Welcome</span>
+        </div>
+        <button class="btn btn-outline" id="navActionBtn" onclick="handleNavAction()">Action</button>
+        <button class="btn btn-primary" onclick="handleLogout()">Sign Out</button>
       </div>
-      <div class="field grow">
-        <label>City / area</label>
-        <input type="text" id="fCity" placeholder="e.g. Thanjavur">
-      </div>
-      <div class="field">
-        <label>Availability</label>
-        <select id="fAvail">
-          <option value="">Any</option>
-          <option value="yes">Available now</option>
-          <option value="no">Resting</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" id="btnSearch">Search</button>
-    </div>
-    <div id="findResults" class="cards"></div>
-  </section>
+    </header>
 
-  <!-- REGISTER -->
-  <section class="panel" id="panel-register">
-    <div class="section-head">
-      <div class="eyebrow">Registration</div>
-      <h2>Become a donor</h2>
-      <p>Takes under a minute. You can mark yourself unavailable any time without deleting your profile.</p>
+    <!-- Top Emergency Notification Bar -->
+    <div class="emergency-banner-critical" id="emergencyBanner" style="display: none;">
+      <div id="emergencyBannerContent" style="flex: 1;"></div>
+      <button class="close-alert-btn" onclick="dismissEmergencyAlert()">&times;</button>
     </div>
-    <div class="card" style="max-width:560px;">
-      <form id="registerForm">
-        <div class="field">
-          <label>Full name</label>
-          <input type="text" id="rName" required placeholder="Your name">
+
+    <!-- VIEW 1: PATIENT & REQUESTER DASHBOARD -->
+    <div id="patientDashboardView" style="display: none;">
+      <section class="hero">
+        <h1>Find Blood Donors In Your District</h1>
+        <p>Real-time list of available donors and rest period cooldown trackers</p>
+      </section>
+
+      <!-- Search Section -->
+      <div class="search-card">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Blood Group</label>
+          <select id="filterBlood" class="form-control">
+            <option value="">All Blood Groups (All)</option>
+            <option value="A+">A+</option><option value="A-">A-</option>
+            <option value="B+">B+</option><option value="B-">B-</option>
+            <option value="O+">O+</option><option value="O-">O-</option>
+            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          </select>
         </div>
-        <div class="field">
-          <label>Blood group</label>
-          <div class="bg-picker" id="rGroupPicker" data-target="rGroup"></div>
-          <input type="hidden" id="rGroup" required>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>District / City (Type 's' for Salem, 'e' for Erode...)</label>
+          <input type="text" id="filterCity" class="form-control" placeholder="Type city: Salem, Erode...">
         </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Phone number</label>
-            <input type="tel" id="rPhone" required placeholder="10-digit number">
-          </div>
-          <div class="field">
-            <label>City / area</label>
-            <input type="text" id="rCity" required placeholder="e.g. Papanasam">
-          </div>
+        <button class="btn btn-primary" onclick="filterDonors()">Search</button>
+      </div>
+
+      <!-- Main Results Grid -->
+      <main class="container">
+        <div class="section-header">
+          <h3>Registered Donors Directory</h3>
+          <span id="donorCount" style="color: var(--gray-600); font-weight: 700;"></span>
         </div>
-        <div class="field">
-          <label>Last donated (optional)</label>
-          <input type="date" id="rLastDonated">
-        </div>
-        <div class="field">
-          <div class="toggle-row">
+        <div class="donor-grid" id="donorGrid"></div>
+      </main>
+    </div>
+
+    <!-- VIEW 2: DONOR PROFILE DASHBOARD -->
+    <div id="donorDashboardView" style="display: none;">
+      <section class="hero">
+        <h1>Donor Management Profile</h1>
+        <p>Thank you for your active participation in saving precious lives</p>
+      </section>
+
+      <main class="container" style="max-width: 700px; margin-top: -2rem;">
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar">🩸</div>
             <div>
-              <div style="font-weight:600; font-size:13.5px;">Available to donate now</div>
-              <div style="font-size:11.5px; color:var(--ink-50); margin-top:2px;">You can toggle this later from your entry</div>
+              <h2 id="profileNameDisplay">Donor Name</h2>
+              <p id="profileLocationDisplay" style="color: var(--gray-600);">Salem, Tamil Nadu</p>
             </div>
-            <label class="switch"><input type="checkbox" id="rAvail" checked><span class="slider"></span></label>
+            <span class="blood-badge" id="profileBloodDisplay" style="margin-left: auto;">O+</span>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--gray-300); margin: 1.5rem 0;">
+
+          <div class="profile-info-grid">
+            <div class="info-item">
+              <label>Current Status</label>
+              <div id="profileEligibilityBadge" class="status-badge status-available">AVAILABLE</div>
+            </div>
+            <div class="info-item">
+              <label>Last Donated On</label>
+              <p id="profileLastDonationDate" style="font-weight: 700;">Never donated before</p>
+            </div>
+            <div class="info-item">
+              <label>Contact Phone</label>
+              <p id="profilePhoneDisplay" style="font-weight: 700;">9876543210</p>
+            </div>
+            <div class="info-item">
+              <label>Email Account</label>
+              <p id="profileEmailDisplay" style="font-weight: 700;">donor@gmail.com</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="openModal('updateDonationModal')">📅 Log New Donation Date</button>
+            <button class="btn btn-outline" style="flex: 1;" onclick="switchToPatientSearch()">🔍 Search All Donors</button>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Register as donor</button>
-        <div class="msg" id="registerMsg"></div>
+      </main>
+    </div>
+
+    <!-- 24/7 Floating Emergency SOS Button -->
+    <div class="floating-emergency-sos" onclick="openModal('sosModal')">
+      🚨 <span>Emergency SOS Alert</span>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 1: EMERGENCY SOS BROADCAST ================= -->
+  <div class="modal-overlay" id="sosModal">
+    <div class="modal-box emergency-border">
+      <div class="modal-header">
+        <h3 style="color: var(--primary);">🚨 Emergency Patient Alert Broadcast</h3>
+        <button class="close-btn" onclick="closeModal('sosModal')">&times;</button>
+      </div>
+      <form onsubmit="handlePatientEmergencySubmit(event)">
+        <div class="form-group">
+          <label>Emergency Severity Level</label>
+          <select id="sosUrgency" class="form-control">
+            <option value="CRITICAL">🚨 Critical / Surgery / ICU (Urgent)</option>
+            <option value="MODERATE">🟡 Moderate / General Requirement</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Patient Name</label>
+          <input type="text" id="sosPatient" class="form-control" placeholder="Enter patient name" required>
+        </div>
+        <div class="form-group">
+          <label>Required Blood Group</label>
+          <select id="sosBlood" class="form-control" required>
+            <option value="O+">O+</option><option value="O-">O-</option>
+            <option value="A+">A+</option><option value="A-">A-</option>
+            <option value="B+">B+</option><option value="B-">B-</option>
+            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Hospital & District/City</label>
+          <input type="text" id="sosHospital" class="form-control" placeholder="e.g. Govt Mohan Kumaramangalam Hospital, Salem" required>
+        </div>
+        <div class="form-group">
+          <label>Attender Mobile Number</label>
+          <input type="tel" id="sosPhone" class="form-control" pattern="[0-9]{10}" placeholder="10-digit mobile number" required>
+        </div>
+        <div class="form-group">
+          <label>Units Needed</label>
+          <input type="number" id="sosUnits" class="form-control" value="2" min="1" max="10" required>
+        </div>
+        <button type="submit" class="btn btn-emergency-submit" style="width: 100%; margin-top: 0.5rem;">Broadcast Immediate Alert</button>
       </form>
     </div>
-  </section>
+  </div>
 
-  <!-- REQUEST -->
-  <section class="panel" id="panel-request">
-    <div class="section-head">
-      <div class="eyebrow">Emergency</div>
-      <h2>Post a blood request</h2>
-      <p>Your request goes on the public board immediately, and we'll show how many compatible donors are in the network right now.</p>
-    </div>
-    <div class="card" style="max-width:560px;">
-      <form id="requestForm">
-        <div class="field">
-          <label>Patient name</label>
-          <input type="text" id="qPatient" required placeholder="Who needs blood">
+  <!-- ================= MODAL 2: REGISTER NEW DONOR ================= -->
+  <div class="modal-overlay" id="registerModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Donor Registration</h3>
+        <button class="close-btn" onclick="closeModal('registerModal')">&times;</button>
+      </div>
+      <form onsubmit="handleRegisterModalSubmit(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="modalRegName" class="form-control" required>
         </div>
-        <div class="field">
-          <label>Blood group needed</label>
-          <div class="bg-picker" id="qGroupPicker" data-target="qGroup"></div>
-          <input type="hidden" id="qGroup" required>
+        <div class="form-group">
+          <label>Blood Group</label>
+          <select id="modalRegBlood" class="form-control" required>
+            <option value="A+">A+</option><option value="A-">A-</option>
+            <option value="B+">B+</option><option value="B-">B-</option>
+            <option value="O+">O+</option><option value="O-">O-</option>
+            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          </select>
         </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Units needed</label>
-            <input type="number" id="qUnits" min="1" value="1" required>
-          </div>
-          <div class="field">
-            <label>Urgency</label>
-            <select id="qUrgency">
-              <option value="critical">Critical — within hours</option>
-              <option value="urgent">Urgent — within 1–2 days</option>
-              <option value="planned">Planned — this week</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label>District / City</label>
+          <input type="text" id="modalRegCity" class="form-control" required>
         </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Hospital / city</label>
-            <input type="text" id="qCity" required placeholder="e.g. Thanjavur Medical College">
-          </div>
-          <div class="field">
-            <label>Contact phone</label>
-            <input type="tel" id="qPhone" required placeholder="10-digit number">
-          </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="modalRegPhone" class="form-control" pattern="[0-9]{10}" required>
         </div>
-        <div class="field">
-          <label>Message (optional)</label>
-          <textarea id="qMessage" placeholder="Any extra detail donors should know"></textarea>
+        <div class="form-group">
+          <label>Last Donation Date (Leave empty if never donated)</label>
+          <input type="date" id="modalRegDate" class="form-control">
         </div>
-        <div class="compat-note" id="qCompatNote">Pick a blood group above to see which donor groups can help.</div>
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top:16px;">Post request</button>
-        <div class="msg" id="requestMsg"></div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Register Donor</button>
       </form>
     </div>
-  </section>
+  </div>
 
-  <!-- BOARD -->
-  <section class="panel" id="panel-board">
-    <div class="section-head">
-      <div class="eyebrow">Live</div>
-      <h2>Active requests</h2>
-      <p>Sorted by urgency. Tap "I can help" if your blood group is compatible and you're free to donate.</p>
-    </div>
-    <div id="boardList"></div>
-  </section>
-
-  <!-- DASHBOARD -->
-  <section class="panel" id="panel-dashboard">
-    <div class="section-head">
-      <div class="eyebrow">Overview</div>
-      <h2>Network snapshot</h2>
-      <p>Live counts across every donor and request stored in this portal.</p>
-    </div>
-    <div class="stat-grid" id="dashStats"></div>
-    <div class="card">
-      <div style="font-weight:700; margin-bottom:14px;">Donors by blood group</div>
-      <div id="dashBars"></div>
-    </div>
-  </section>
-
-</main>
-
-<script>
-const GROUPS = ["O-","O+","A-","A+","B-","B+","AB-","AB+"];
-// which donor groups CAN GIVE TO a given recipient group
-const CAN_RECEIVE_FROM = {
-  "O-":["O-"],
-  "O+":["O+","O-"],
-  "A-":["A-","O-"],
-  "A+":["A+","A-","O+","O-"],
-  "B-":["B-","O-"],
-  "B+":["B+","B-","O+","O-"],
-  "AB-":["AB-","A-","B-","O-"],
-  "AB+":["AB+","AB-","A+","A-","B+","B-","O+","O-"]
-};
-
-let donors = [];
-let requests = [];
-let dataReady = false;
-
-// ---------- storage helpers ----------
-async function loadAll(){
-  try{
-    const d = await window.storage.get('donors-list', true);
-    donors = d ? JSON.parse(d.value) : [];
-  }catch(e){ donors = []; }
-  try{
-    const r = await window.storage.get('requests-list', true);
-    requests = r ? JSON.parse(r.value) : [];
-  }catch(e){ requests = []; }
-  dataReady = true;
-}
-async function saveDonors(){
-  try{ await window.storage.set('donors-list', JSON.stringify(donors), true); }
-  catch(e){ console.error('save donors failed', e); }
-}
-async function saveRequests(){
-  try{ await window.storage.set('requests-list', JSON.stringify(requests), true); }
-  catch(e){ console.error('save requests failed', e); }
-}
-
-// ---------- tabs ----------
-document.querySelectorAll('.tabbtn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
-    if(btn.dataset.tab==='board') renderBoard();
-    if(btn.dataset.tab==='dashboard') renderDashboard();
-    if(btn.dataset.tab==='find') renderFind();
-  });
-});
-
-// ---------- blood group pickers ----------
-function buildPicker(containerId, hiddenId){
-  const el = document.getElementById(containerId);
-  el.innerHTML = GROUPS.map(g=>`<button type="button" class="bg-chip" data-g="${g}">${g}</button>`).join('');
-  el.querySelectorAll('.bg-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      el.querySelectorAll('.bg-chip').forEach(c=>c.classList.remove('selected'));
-      chip.classList.add('selected');
-      document.getElementById(hiddenId).value = chip.dataset.g;
-      if(hiddenId==='qGroup') updateCompatNote(chip.dataset.g);
-    });
-  });
-}
-buildPicker('rGroupPicker','rGroup');
-buildPicker('qGroupPicker','qGroup');
-
-function updateCompatNote(group){
-  const donorsFor = CAN_RECEIVE_FROM[group] || [];
-  const count = donors.filter(d=> donorsFor.includes(d.group) && d.available).length;
-  document.getElementById('qCompatNote').textContent =
-    `${group} patients can receive from: ${donorsFor.join(', ')}. Right now there ${count===1?'is':'are'} ${count} available compatible donor${count===1?'':'s'} in the network.`;
-}
-
-// ---------- register ----------
-document.getElementById('registerForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const group = document.getElementById('rGroup').value;
-  const msg = document.getElementById('registerMsg');
-  if(!group){ showMsg(msg,'err','Please select a blood group.'); return; }
-  const donor = {
-    id: 'd_'+Date.now()+'_'+Math.floor(Math.random()*1000),
-    name: document.getElementById('rName').value.trim(),
-    group,
-    phone: document.getElementById('rPhone').value.trim(),
-    city: document.getElementById('rCity').value.trim(),
-    lastDonated: document.getElementById('rLastDonated').value || null,
-    available: document.getElementById('rAvail').checked,
-    createdAt: Date.now()
-  };
-  donors.push(donor);
-  await saveDonors();
-  showMsg(msg,'ok', `Thanks, ${donor.name.split(' ')[0]}! You're now listed as a ${donor.group} donor in ${donor.city}.`);
-  e.target.reset();
-  document.querySelectorAll('#rGroupPicker .bg-chip').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('rGroup').value='';
-  document.getElementById('rAvail').checked = true;
-  refreshStats();
-});
-
-function showMsg(el, kind, text){
-  el.className = 'msg show '+kind;
-  el.textContent = text;
-  setTimeout(()=>{ el.classList.remove('show'); }, 5000);
-}
-
-// ---------- request ----------
-document.getElementById('requestForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const group = document.getElementById('qGroup').value;
-  const msg = document.getElementById('requestMsg');
-  if(!group){ showMsg(msg,'err','Please select the blood group needed.'); return; }
-  const req = {
-    id: 'r_'+Date.now()+'_'+Math.floor(Math.random()*1000),
-    patient: document.getElementById('qPatient').value.trim(),
-    group,
-    units: parseInt(document.getElementById('qUnits').value)||1,
-    urgency: document.getElementById('qUrgency').value,
-    city: document.getElementById('qCity').value.trim(),
-    phone: document.getElementById('qPhone').value.trim(),
-    message: document.getElementById('qMessage').value.trim(),
-    createdAt: Date.now(),
-    fulfilled: false
-  };
-  requests.push(req);
-  await saveRequests();
-  showMsg(msg,'ok', 'Request posted to the board. Compatible donors can now see it.');
-  e.target.reset();
-  document.querySelectorAll('#qGroupPicker .bg-chip').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('qGroup').value='';
-  document.getElementById('qCompatNote').textContent = 'Pick a blood group above to see which donor groups can help.';
-  refreshStats();
-});
-
-// ---------- find donors ----------
-document.getElementById('btnSearch').addEventListener('click', renderFind);
-function renderFind(){
-  const container = document.getElementById('findResults');
-  if(!dataReady){ container.innerHTML = '<div class="loading">Loading donors…</div>'; return; }
-  const group = document.getElementById('fGroup').value;
-  const city = document.getElementById('fCity').value.trim().toLowerCase();
-  const avail = document.getElementById('fAvail').value;
-
-  let list = donors.filter(d=>{
-    if(group && d.group !== group) return false;
-    if(city && !d.city.toLowerCase().includes(city)) return false;
-    if(avail==='yes' && !d.available) return false;
-    if(avail==='no' && d.available) return false;
-    return true;
-  }).sort((a,b)=> b.createdAt - a.createdAt);
-
-  if(list.length===0){
-    container.innerHTML = `<div class="empty" style="grid-column:1/-1;">
-      <div class="drop"><span>?</span></div>
-      <div style="font-weight:600; margin-bottom:4px;">No donors match yet</div>
-      <div style="font-size:13px;">Try widening the search, or be the first to register.</div>
-    </div>`;
-    return;
-  }
-  container.innerHTML = list.map(d=>donorCard(d)).join('');
-  container.querySelectorAll('[data-toggle]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const donor = donors.find(x=>x.id===btn.dataset.toggle);
-      donor.available = !donor.available;
-      await saveDonors();
-      renderFind();
-      refreshStats();
-    });
-  });
-}
-function donorCard(d){
-  const days = d.lastDonated ? Math.floor((Date.now()-new Date(d.lastDonated).getTime())/86400000) : null;
-  return `<div class="dcard">
-    <div class="dcard-top">
-      <div class="drop"><span>${d.group}</span></div>
-      <div>
-        <div class="dcard-name">${escapeHtml(d.name)}</div>
-        <div class="dcard-city">${escapeHtml(d.city)}</div>
+  <!-- ================= MODAL 3: LOG NEW DONATION DATE ================= -->
+  <div class="modal-overlay" id="updateDonationModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Log Blood Donation</h3>
+        <button class="close-btn" onclick="closeModal('updateDonationModal')">&times;</button>
       </div>
-    </div>
-    <div class="dcard-meta">
-      <span class="pill ${d.available?'avail':'resting'}">${d.available?'Available now':'Resting'}</span>
-      ${days!==null ? `<span class="pill">Donated ${days}d ago</span>` : ''}
-    </div>
-    <div class="dcard-actions">
-      <a class="btn btn-gold btn-sm" href="tel:${escapeHtml(d.phone)}" style="flex:1; text-decoration:none;">Call</a>
-      <button class="btn btn-ghost btn-sm" data-toggle="${d.id}">${d.available?'Mark resting':'Mark available'}</button>
-    </div>
-  </div>`;
-}
-
-// ---------- board ----------
-const URG_ORDER = {critical:0, urgent:1, planned:2};
-const URG_LABEL = {critical:'Critical', urgent:'Urgent', planned:'Planned'};
-function renderBoard(){
-  const el = document.getElementById('boardList');
-  if(!dataReady){ el.innerHTML = '<div class="loading">Loading requests…</div>'; return; }
-  const active = requests.filter(r=>!r.fulfilled).sort((a,b)=> URG_ORDER[a.urgency]-URG_ORDER[b.urgency] || b.createdAt-a.createdAt);
-  if(active.length===0){
-    el.innerHTML = `<div class="empty"><div class="drop"><span>0</span></div>
-      <div style="font-weight:600; margin-bottom:4px;">No active requests</div>
-      <div style="font-size:13px;">The board is clear right now.</div></div>`;
-    return;
-  }
-  el.innerHTML = active.map(r=>{
-    const donorsFor = CAN_RECEIVE_FROM[r.group]||[];
-    const matches = donors.filter(d=>donorsFor.includes(d.group) && d.available).length;
-    const hrsAgo = Math.max(0, Math.floor((Date.now()-r.createdAt)/3600000));
-    return `<div class="req-card">
-      <div class="req-top">
-        <div>
-          <span class="req-urgency urg-${r.urgency}">${URG_LABEL[r.urgency]}</span>
-          <div class="req-title">${r.units} unit${r.units>1?'s':''} of ${r.group} needed for ${escapeHtml(r.patient)}</div>
-          <div class="req-meta">${escapeHtml(r.city)} · posted ${hrsAgo===0?'just now':hrsAgo+'h ago'}</div>
+      <form onsubmit="handleLogDonationSubmit(event)">
+        <div class="form-group">
+          <label>Date of Blood Donation</label>
+          <input type="date" id="donationDateInput" class="form-control" required>
         </div>
-      </div>
-      ${r.message ? `<div class="req-msg">${escapeHtml(r.message)}</div>` : ''}
-      <div class="req-footer">
-        <span class="match-count">${matches} compatible donor${matches===1?'':'s'} available</span>
-        <div style="display:flex; gap:8px;">
-          <a class="btn btn-gold btn-sm" href="tel:${escapeHtml(r.phone)}" style="text-decoration:none;">I can help</a>
-          <button class="btn btn-ghost btn-sm" data-fulfil="${r.id}">Mark fulfilled</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  el.querySelectorAll('[data-fulfil]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const req = requests.find(x=>x.id===btn.dataset.fulfil);
-      req.fulfilled = true;
-      await saveRequests();
-      renderBoard();
-      refreshStats();
-    });
-  });
-}
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save & Update Cooldown</button>
+      </form>
+    </div>
+  </div>
 
-// ---------- dashboard ----------
-function renderDashboard(){
-  const statsEl = document.getElementById('dashStats');
-  const activeReq = requests.filter(r=>!r.fulfilled).length;
-  const fulfilled = requests.filter(r=>r.fulfilled).length;
-  const availableDonors = donors.filter(d=>d.available).length;
-  statsEl.innerHTML = `
-    <div class="stat-box"><div class="n">${donors.length}</div><div class="l">Total donors</div></div>
-    <div class="stat-box"><div class="n">${availableDonors}</div><div class="l">Available now</div></div>
-    <div class="stat-box"><div class="n">${activeReq}</div><div class="l">Active requests</div></div>
-    <div class="stat-box"><div class="n">${fulfilled}</div><div class="l">Fulfilled requests</div></div>
-  `;
-  const max = Math.max(1, ...GROUPS.map(g=>donors.filter(d=>d.group===g).length));
-  document.getElementById('dashBars').innerHTML = GROUPS.map(g=>{
-    const n = donors.filter(d=>d.group===g).length;
-    const pct = Math.round((n/max)*100);
-    return `<div class="bar-row">
-      <div class="bar-label">${g}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>
-      <div class="bar-n">${n}</div>
-    </div>`;
-  }).join('');
-}
-
-// ---------- shared stats + pulse ----------
-function refreshStats(){
-  document.getElementById('statDonors').textContent = donors.length;
-  const activeReq = requests.filter(r=>!r.fulfilled).length;
-  document.getElementById('statRequests').textContent = activeReq;
-  const critical = requests.filter(r=>!r.fulfilled && r.urgency==='critical').length;
-  const wrap = document.getElementById('pulseWrap');
-  const cap = document.getElementById('pulseCaption');
-  if(critical>0){ wrap.classList.add('urgent'); cap.textContent = critical+' critical request'+(critical>1?'s':'')+' live'; }
-  else { wrap.classList.remove('urgent'); cap.textContent = activeReq>0 ? activeReq+' request'+(activeReq>1?'s':'')+' on the board' : 'network idle'; }
-}
-
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str||'';
-  return d.innerHTML;
-}
-
-// ---------- init ----------
-(async function init(){
-  document.getElementById('findResults').innerHTML = '<div class="loading">Loading donors…</div>';
-  await loadAll();
-  renderFind();
-  refreshStats();
-})();
-</script>
+  <!-- Scripts -->
+  <script src="src/js/storage.js"></script>
+  <script src="src/js/translations.js"></script>
+  <script src="src/js/auth.js"></script>
+  <script src="src/js/app.js"></script>
 </body>
 </html>
